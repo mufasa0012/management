@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Business Interface API Dashboard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+  body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #f7f9fc;
+    color: #333;
+  }
+  header {
+    background: linear-gradient(90deg, #4b6cb7, #182848);
+    padding: 1rem 2rem;
+    color: white;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    letter-spacing: 1.2px;
+  }
+  nav {
+    background: #fff;
+    display: flex;
+    justify-content: center;
+    box-shadow: 0 2px 5px rgb(0 0 0 / 0.1);
+  }
+  nav button {
+    background: none;
+    border: none;
+    outline: none;
+    padding: 1rem 1.5rem;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background 0.25s ease;
+    color: #555;
+    font-weight: 500;
+  }
+  nav button.active,
+  nav button:hover {
+    background: #4b6cb7;
+    color: white;
+    font-weight: 700;
+  }
+  main {
+    max-width: 960px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 8px 20px rgb(0 0 0 / 0.1);
+  }
+  h2 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #182848; 
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+  th, td {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #ddd;
+    vertical-align: middle;
+  }
+  th {
+    background: #f8fafd;
+    font-weight: 600;
+    color: #4b6cb7;
+  }
+  tr:hover {
+    background: #f1f7ff;
+  }
+  input[type="text"],
+  input[type="number"],
+  select {
+    padding: 0.5rem 0.75rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  label {
+    font-weight: 600;
+    display: block;
+    margin-bottom: 0.3rem;
+    color: #4b6cb7;
+  }
+  .form-row {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+  .form-row > div {
+    flex: 1 1 200px;
+  }
+  button.btn {
+    background: #4b6cb7;
+    color: white;
+    border: none;
+    padding: 0.7rem 1.5rem;
+    font-size: 1.1rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s;
+    font-weight: 600;
+  }
+  button.btn:hover {
+    background: #3a539b;
+  }
+  .status-good {
+    color: #2a9d8f;
+    font-weight: 700;
+  }
+  .status-bad {
+    color: #e63946;
+    font-weight: 700;
+  }
+  .stats {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+  }
+  .stat-card {
+    flex: 1 1 220px;
+    background: #f1faff;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgb(18 52 86 / 0.1);
+    text-align: center;
+  }
+  .stat-card h3 {
+    margin: 0 0 0.5rem;
+    color: #264653;
+  }
+  .stat-card p {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #264653;
+  }
+  .small-info {
+    font-size: 0.9rem;
+    color: #777;
+  }
+  .scrollable-table {
+    max-height: 280px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+  }
+  .message {
+    padding: 1rem;
+    border-radius: 6px;
+    margin-bottom: 1.5rem;
+  }
+  .message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+  }
+  .message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+  }
+  footer {
+    text-align: center;
+    padding: 1rem;
+    color: #888;
+    font-size: 0.9rem;
+  }
+</style>
+</head>
+<body>
+<header>Business Interface API Dashboard</header>
+<nav>
+  <button id="tabGoods" class="active">Store Goods</button>
+  <button id="tabOrders">Customer Orders</button>
+  <button id="tabDisplay">Goods on Display</button>
+  <button id="tabDelivery">Goods Delivered</button>
+  <button id="tabAccounting">Accounting</button>
+  <button id="tabReports">Reports</button>
+</nav>
+<main>
+  <!-- Store Goods -->
+  <section id="sectionGoods" class="tab-section">
+    <h2>Store Goods Management</h2>
+    <div class="scrollable-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Good ID</th>
+            <th>Name</th>
+            <th>Price ($)</th>
+            <th>Stock Qty</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="goodsTableBody"></tbody>
+      </table>
+    </div>
+    <h3>Add / Update Good</h3>
+    <form id="goodsForm">
+      <div class="form-row">
+        <div>
+          <label for="goodId">Good ID</label>
+          <input type="text" id="goodId" placeholder="Unique ID" required />
+        </div>
+        <div>
+          <label for="goodName">Name</label>
+          <input type="text" id="goodName" placeholder="Name of the good" required />
+        </div>
+        <div>
+          <label for="goodPrice">Price ($)</label>
+          <input type="number" id="goodPrice" min="0" step="0.01" required />
+        </div>
+        <div>
+          <label for="goodStock">Stock Quantity</label>
+          <input type="number" id="goodStock" min="0" step="1" required />
+        </div>
+      </div>
+      <button type="submit" class="btn">Add / Update Good</button>
+    </form>
+  </section>
+
+  <!-- Customer Orders -->
+  <section id="sectionOrders" class="tab-section" style="display:none;">
+    <h2>Customer Orders</h2>
+    <div class="scrollable-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Customer Name</th>
+            <th>Good Ordered</th>
+            <th>Quantity</th>
+            <th>Total Price ($)</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="ordersTableBody"></tbody>
+      </table>
+    </div>
+    <h3>Create New Order</h3>
+    <form id="orderForm">
+      <div class="form-row">
+        <div>
+          <label for="orderId">Order ID</label>
+          <input type="text" id="orderId" placeholder="Unique Order ID" required />
+        </div>
+        <div>
+          <label for="customerName">Customer Name</label>
+          <input type="text" id="customerName" placeholder="Customer's name" required />
+        </div>
+        <div>
+          <label for="orderGoodId">Good</label>
+          <select id="orderGoodId" required><option value="">Select a good</option></select>
+        </div>
+        <div>
+          <label for="orderQuantity">Quantity</label>
+          <input type="number" id="orderQuantity" min="1" step="1" required />
+        </div>
+      </div>
+      <button type="submit" class="btn">Create Order</button>
+    </form>
+  </section>
+
+  <!-- Goods On Display -->
+  <section id="sectionDisplay" class="tab-section" style="display:none;">
+    <h2>Goods on Display</h2>
+    <div class="scrollable-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Good ID</th>
+            <th>Name</th>
+            <th>Display Quantity</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody id="displayGoodsTableBody"></tbody>
+      </table>
+    </div>
+    <h3>Add / Update Display Quantity</h3>
+    <form id="displayForm">
+      <div class="form-row">
+        <div>
+          <label for="displayGoodId">Good</label>
+          <select id="displayGoodId" required><option value="">Select a good</option></select>
+        </div>
+        <div>
+          <label for="displayQuantity">Display Quantity</label>
+          <input type="number" id="displayQuantity" min="0" step="1" required />
+        </div>
+      </div>
+      <button type="submit" class="btn">Set Display Quantity</button>
+    </form>
+  </section>
+
+  <!-- Goods Delivered -->
+  <section id="sectionDelivery" class="tab-section" style="display:none;">
+    <h2>Goods Delivered</h2>
+    <div class="scrollable-table">
+      <table>
+        <thead>
+          <tr>
+            <th>Delivery ID</th>
+            <th>Good</th>
+            <th>Quantity Delivered</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="deliveryTableBody"></tbody>
+      </table>
+    </div>
+    <h3>Add Delivery</h3>
+    <form id="deliveryForm">
+      <div class="form-row">
+        <div>
+          <label for="deliveryId">Delivery ID</label>
+          <input type="text" id="deliveryId" placeholder="Unique Delivery ID" required />
+        </div>
+        <div>
+          <label for="deliveryGoodId">Good</label>
+          <select id="deliveryGoodId" required><option value="">Select a good</option></select>
+        </div>
+        <div>
+          <label for="deliveryQuantity">Quantity Delivered</label>
+          <input type="number" id="deliveryQuantity" min="1" step="1" required />
+        </div>
+      </div>
+      <button type="submit" class="btn">Add Delivery</button>
+    </form>
+  </section>
+
+  <!-- Accounting -->
+  <section id="sectionAccounting" class="tab-section" style="display:none;">
+    <h2>Accounting Overview</h2>
+    <div class="stats">
+      <div class="stat-card">
+        <h3>Total Income</h3>
+        <p id="totalIncome">$0.00</p>
+        <p class="small-info">Total revenue from goods sold</p>
+      </div>
+      <div class="stat-card">
+        <h3>Total Expenses</h3>
+        <p id="totalExpenses">$0.00</p>
+        <p class="small-info">Total expenses for goods restocked</p>
+      </div>
+      <div class="stat-card">
+        <h3>Net Profit</h3>
+        <p id="netProfit">$0.00</p>
+        <p class="small-info">Income - Expenses</p>
+      </div>
+    </div>
+    <h3>Accounting Logs</h3>
+    <div class="scrollable-table" style="max-height: 300px;">
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+            <th>Amount ($)</th>
+            <th>Type</th>
+          </tr>
+        </thead>
+        <tbody id="accountingLogsTableBody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Reports (including goods lack) -->
+  <section id="sectionReports" class="tab-section" style="display:none;">
+    <h2>Reports</h2>
+    <div>
+      <h3>Goods Lacking Stock</h3>
+      <div class="scrollable-table" style="max-height: 240px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Good ID</th>
+              <th>Name</th>
+              <th>Stock Quantity</th>
+            </tr>
+          </thead>
+          <tbody id="lackGoodsTableBody"></tbody>
+        </table>
+      </div>
+      <small class="small-info">Displays goods with stock quantity less than 5.</small>
+    </div>
+  </section>
+</main>
+<footer>© 2024 Business Interface API Demo</footer>
+<script>
+  // Data storage simulation
+  let goods = [
+    { id: 'G001', name: 'Laptop', price: 1200, stock: 10, displayQty: 3 },
+    { id: 'G002', name: 'Smartphone', price: 800, stock: 15, displayQty: 5 },
+    { id: 'G003', name: 'Headphones', price: 150, stock: 25, displayQty: 8 },
+  ];
+  let orders = [];
+  let deliveries = [];
+  let accountingLogs = [];
+
+  // Utility: Format currency
+  function formatCurrency(num) {
+    return '$' + num.toFixed(2);
+  }
+  // Tabs navigation
+  const tabs = {
+    tabGoods: 'sectionGoods',
+    tabOrders: 'sectionOrders',
+    tabDisplay: 'sectionDisplay',
+    tabDelivery: 'sectionDelivery',
+    tabAccounting: 'sectionAccounting',
+    tabReports: 'sectionReports'
+  };
+  Object.keys(tabs).forEach(tabId => {
+    document.getElementById(tabId).addEventListener('click', () => {
+      // Set active tab button
+      Object.keys(tabs).forEach(tid => {
+        document.getElementById(tid).classList.toggle('active', tid === tabId);
+        document.getElementById(tabs[tid]).style.display = tid === tabId ? 'block' : 'none';
+      });
+      if(tabId === 'tabOrders') {
+        updateOrderGoodsDropdown();
+      }
+      if(tabId === 'tabDisplay') {
+        updateDisplayGoodsDropdown();
+      }
+      if(tabId === 'tabDelivery') {
+        updateDeliveryGoodsDropdown();
+      }
+    });
+  });
+
+  // Store Goods Functions
+  function updateGoodsTable() {
+    const tbody = document.getElementById('goodsTableBody');
+    tbody.innerHTML = '';
+    for(let good of goods) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${good.id}</td>
+        <td>${good.name}</td>
+        <td>${formatCurrency(good.price)}</td>
+        <td>${good.stock}</td>
+        <td class="${good.stock > 5 ? 'status-good' : 'status-bad'}">${good.stock > 5 ? 'In Stock' : 'Low Stock'}</td>
+        <td><button onclick="deleteGood('${good.id}')" style="background:#e63946;color:#fff;padding:0.3rem 0.6rem;border:none;border-radius:3px;cursor:pointer;">Delete</button></td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+  function deleteGood(id) {
+    if(confirm('Confirm delete of good ID: ' + id + '?')) {
+      goods = goods.filter(g => g.id !== id);
+      updateGoodsTable();
+      updateAllDropdowns();
+      updateDisplayGoodsTable();
+      updateAccounting();
+      updateOrdersTable();
+      updateDeliveriesTable();
+      updateLackGoodsTable();
+    }
+  }
+  document.getElementById('goodsForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('goodId').value.trim();
+    const name = document.getElementById('goodName').value.trim();
+    const price = parseFloat(document.getElementById('goodPrice').value);
+    const stock = parseInt(document.getElementById('goodStock').value);
+
+    const existingIndex = goods.findIndex(g => g.id === id);
+    if(existingIndex >= 0) {
+      // Update existing
+      goods[existingIndex].name = name;
+      goods[existingIndex].price = price;
+      goods[existingIndex].stock = stock;
+    } else {
+      // Add new good
+      goods.push({ id, name, price, stock, displayQty: 0 });
+    }
+    updateGoodsTable();
+    updateAllDropdowns();
+    updateDisplayGoodsTable();
+    updateLackGoodsTable();
+    e.target.reset();
+  });
+
+  // Orders Functions
+  function updateOrdersTable() {
+    const tbody = document.getElementById('ordersTableBody');
+    tbody.innerHTML = '';
+    for(let order of orders) {
+      const good = goods.find(g => g.id === order.goodId);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${order.id}</td>
+        <td>${order.customerName}</td>
+        <td>${good ? good.name : 'Unknown'}</td>
+        <td>${order.quantity}</td>
+        <td>${good ? formatCurrency(order.quantity * good.price) : '-'}</td>
+        <td>${order.status}</td>
+        <td>
+          ${order.status === 'Pending' ? '<button onclick="completeOrder(\'' + order.id + '\')" style="background:#2a9d8f;color:#fff;padding:0.3rem 0.6rem;border:none;border-radius:3px;cursor:pointer;">Complete</button>' : ''}
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+  function completeOrder(id) {
+    const order = orders.find(o => o.id === id);
+    if(!order) return alert('Order not found');
+    if(order.status !== 'Pending') return alert('Order already completed');
+
+    // Check stock if enough for order
+    const good = goods.find(g => g.id === order.goodId);
+    if(!good) return alert('Good not found');
+    if(good.stock < order.quantity) return alert('Insufficient stock to complete order!');
+
+    // Deduct stock
+    good.stock -= order.quantity;
+    order.status = "Completed";
+    updateOrdersTable();
+    updateGoodsTable();
+    updateAccountingOnSale(order, good);
+    updateLackGoodsTable();
+    alert('Order completed and stock updated');
+  }
+  document.getElementById('orderForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('orderId').value.trim();
+    const customerName = document.getElementById('customerName').value.trim();
+    const goodId = document.getElementById('orderGoodId').value;
+    const quantity = parseInt(document.getElementById('orderQuantity').value);
+
+    if(!goods.find(g => g.id === goodId)) {
+      return alert('Selected good does not exist');
+    }
+    if(orders.find(o => o.id === id)) {
+      return alert('Order ID already exists');
+    }
+    orders.push({
+      id,
+      customerName,
+      goodId,
+      quantity,
+      status: 'Pending'
+    });
+    updateOrdersTable();
+    e.target.reset();
+  });
+  function updateOrderGoodsDropdown() {
+    const select = document.getElementById('orderGoodId');
+    select.innerHTML = '<option value="">Select a good</option>';
+    goods.forEach(g => {
+      select.innerHTML += `<option value="${g.id}">${g.name} (Stock: ${g.stock})</option>`;
+    });
+  }
+
+  // Goods on Display Functions
+  function updateDisplayGoodsTable() {
+    const tbody = document.getElementById('displayGoodsTableBody');
+    tbody.innerHTML = '';
+    for(let good of goods) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${good.id}</td>
+        <td>${good.name}</td>
+        <td>${good.displayQty || 0}</td>
+        <td>
+          <button onclick="removeDisplayQty('${good.id}')" style="background:#e63946;color:#fff;padding:0.3rem 0.6rem;border:none;border-radius:3px;cursor:pointer;">Reset</button>
+        </td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+  function removeDisplayQty(id) {
+    const good = goods.find(g => g.id === id);
+    if(good) {
+      good.displayQty = 0;
+      updateDisplayGoodsTable();
+      alert('Display quantity reset for ' + good.name);
+    }
+  }
+  document.getElementById('displayForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const goodId = document.getElementById('displayGoodId').value;
+    const qty = parseInt(document.getElementById('displayQuantity').value);
+    const good = goods.find(g => g.id === goodId);
+    if(!good) return alert('Selected good not found');
+    if(qty > good.stock) return alert('Display quantity cannot exceed stock quantity');
+    good.displayQty = qty;
+    updateDisplayGoodsTable();
+    e.target.reset();
+  });
+  function updateDisplayGoodsDropdown() {
+    const select = document.getElementById('displayGoodId');
+    select.innerHTML = '<option value="">Select a good</option>';
+    goods.forEach(g => {
+      select.innerHTML += `<option value="${g.id}">${g.name} (Stock: ${g.stock})</option>`;
+    });
+  }
+
+  // Goods Delivered Functions
+  function updateDeliveriesTable() {
+    const tbody = document.getElementById('deliveryTableBody');
+    tbody.innerHTML = '';
+    for(let delivery of deliveries) {
+      const good = goods.find(g => g.id === delivery.goodId);
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${delivery.id}</td>
+        <td>${good ? good.name : 'Unknown'}</td>
+        <td>${delivery.quantity}</td>
+        <td>${new Date(delivery.date).toLocaleDateString()}</td>
+      `;
+      tbody.appendChild(tr);
+    }
+  }
+  document.getElementById('deliveryForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const id = document.getElementById('deliveryId').value.trim();
+    const goodId = document.getElementById('deliveryGoodId').value;
+    const qty = parseInt(document.getElementById('deliveryQuantity').value);
+
+    if(deliveries.find(d => d.id === id)) {
+      return alert('Delivery ID already exists');
+    }
+    const good = goods.find(g => g.id === goodId);
+    if(!good) return alert('Selected good not found');
+
+    deliveries.push({
+      id,
+      goodId,
+      quantity: qty,
+      date: new Date().toISOString()
+    });
+
+    // Increase stock for the good
+    good.stock += qty;
+
+    updateDeliveriesTable();
+    updateGoodsTable();
+    updateAccountingOnDelivery(good, qty);
+    updateLackGoodsTable();
+    e.target.reset();
+  });
+  function updateDeliveryGoodsDropdown() {
+    const select = document.getElementById('deliveryGoodId');
+    select.innerHTML = '<option value="">Select a good</option>';
+    goods.forEach(g => {
+      select.innerHTML += `<option value="${g.id}">${g.name} (Stock: ${g.stock})</option>`;
+    });
+  }
+
+  // Accounting calculations and functions
+  let totalIncome = 0;
+  let totalExpenses = 0;
+  function updateAccountingOnSale(order, good) {
+    const amount = order.quantity * good.price;
+    totalIncome += amount;
+    accountingLogs.push({
+      date: new Date().toISOString(),
+      description: `Sale of ${order.quantity} x ${good.name} (Order ${order.id})`,
+      amount: amount,
+      type: 'Income'
+    });
+    updateAccounting();
+  }
+  function updateAccountingOnDelivery(good, qty) {
+    // For simplicity, assume cost price is 70% of sale price
+    const costAmount = qty * good.price * 0.7;
+    totalExpenses += costAmount;
+    accountingLogs.push({
+      date: new Date().toISOString(),
+      description: `Stock replenishment of ${qty} x ${good.name}`,
+      amount: costAmount,
+      type: 'Expense'
+    });
+    updateAccounting();
+  }
+  function updateAccounting() {
+    document.getElementById('totalIncome').textContent = formatCurrency(totalIncome);
+    document.getElementById('totalExpenses').textContent = formatCurrency(totalExpenses);
+    document.getElementById('netProfit').textContent = formatCurrency(totalIncome - totalExpenses);
+    updateAccountingLogsTable();
+  }
+  function updateAccountingLogsTable() {
+    const tbody = document.getElementById('accountingLogsTableBody');
+    tbody.innerHTML = '';
+    // Show most recent first
+    accountingLogs.slice().reverse().forEach(log => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td>${new Date(log.date).toLocaleString()}</td>
+        <td>${log.description}</td>
+        <td>${formatCurrency(log.amount)}</td>
+        <td>${log.type}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // Goods lacking stock (below threshold)
+  function updateLackGoodsTable() {
+    const tbody = document.getElementById('lackGoodsTableBody');
+    tbody.innerHTML = '';
+    const lowStockGoods = goods.filter(g => g.stock < 5);
+    if(lowStockGoods.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="3" style="text-align:center;color:#555;">No goods are currently lacking stock.</td></tr>`;
+      return;
+    }
+    for(let g of lowStockGoods) {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${g.id}</td><td>${g.name}</td><td>${g.stock}</td>`;
+      tbody.appendChild(tr);
+    }
+  }
+
+  // Utility to update all dropdowns used in forms that need goods list
+  function updateAllDropdowns() {
+    updateOrderGoodsDropdown();
+    updateDisplayGoodsDropdown();
+    updateDeliveryGoodsDropdown();
+  }
+
+  // Initial load
+  updateGoodsTable();
+  updateOrdersTable();
+  updateDisplayGoodsTable();
+  updateDeliveriesTable();
+  updateAccounting();
+  updateLackGoodsTable();
+  updateAllDropdowns();
+</script>
+</body>
+</html>
+
